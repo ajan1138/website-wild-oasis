@@ -1,12 +1,17 @@
-import CabinCard from "../_components/CabinCard";
+import { Suspense } from "react";
+import CabinList from "../_components/CabinList";
+import Filter from "../_components/Filter";
+import Spinner from "../_components/Spinner";
+import ReservationReminder from "../_components/ReservationReminder";
+
+//export const revalidate = 3600;
 
 export const metadata = {
   title: "Cabins",
 };
 
-export default function Page() {
-  // CHANGE
-  const cabins = [];
+export default function Page({ searchParams }) {
+  const filter = searchParams?.capacity ?? "all";
 
   return (
     <div>
@@ -22,13 +27,14 @@ export default function Page() {
         to paradise.
       </p>
 
-      {cabins.length > 0 && (
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 xl:gap-14">
-          {cabins.map((cabin) => (
-            <CabinCard cabin={cabin} key={cabin.id} />
-          ))}
-        </div>
-      )}
+      <div className="flex justify-end mb-8">
+        <Filter />
+      </div>
+
+      <Suspense fallback={<Spinner />} key={filter}>
+        <CabinList filter={filter} />
+        <ReservationReminder />
+      </Suspense>
     </div>
   );
 }
